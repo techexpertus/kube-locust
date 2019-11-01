@@ -1,0 +1,54 @@
+
+kind: ReplicationController
+apiVersion: v1
+metadata:
+  name: locust-worker
+  labels:
+    name: locust
+    role: worker
+spec:
+  replicas: 4
+  selector:
+    name: locust
+    role: worker
+  template:
+    metadata:
+      labels:
+        name: locust
+        role: worker
+    spec:
+      containers:
+        - name: locust
+          image: eu.gcr.io/kube-perf/kube-locust:latest
+          imagePullPolicy: Always
+          env:
+            - name: EXTRA_MONITORING
+              value: "False"
+            - name: GRAFANA_PASSWORD
+              value: admin
+            - name: GRAFANA_URL
+              value: http://grafana:3000
+            - name: GRAFANA_USER
+              value: admin
+            - name: INFLUXDB_HOST
+              value: http://influxdb:8086
+            - name: INFLUXDB_PASSWORD
+              value: root
+            - name: INFLUXDB_USER
+              value: root
+            - name: LOCUSTS
+              value: RDLocust
+            - name: LOCUST_MASTER
+              value: locust-master
+            - name: LOCUST_MODE
+              value: worker
+            - name: SCENARIO_FILE
+              value: locusts.py
+            - name: STATSD_HOST
+              value: statsd
+            - name: STATSD_PORT
+              value: "8125"
+            - name: STATSD_PREFIX
+              value: locust
+            - name: TARGET_HOST
+              value: https://targethost

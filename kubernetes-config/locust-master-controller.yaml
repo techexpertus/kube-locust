@@ -1,0 +1,61 @@
+kind: ReplicationController
+apiVersion: v1
+metadata:
+  name: locust-master
+  labels:
+    name: locust
+    role: master
+spec:
+  replicas: 1
+  selector:
+    name: locust
+    role: master
+  template:
+    metadata:
+      labels:
+        name: locust
+        role: master
+    spec:
+      containers:
+        - name: locust
+          image: eu.gcr.io/sentinel-perf/sentinel-locust:latest
+          imagePullPolicy: Always
+          env:
+            - name: EXTRA_MONITORING
+              value: "False"
+            - name: GRAFANA_PASSWORD
+              value: admin
+            - name: GRAFANA_URL
+              value: http://grafana:3000
+            - name: GRAFANA_USER
+              value: admin
+            - name: INFLUXDB_HOST
+              value: http://influxdb:8086
+            - name: INFLUXDB_PASSWORD
+              value: root
+            - name: INFLUXDB_USER
+              value: root
+            - name: LOCUSTS
+              value: RDLocust
+            - name: LOCUST_MODE
+              value: master
+            - name: SCENARIO_FILE
+              value: locusts.py
+            - name: STATSD_HOST
+              value: statsd
+            - name: STATSD_PORT
+              value: "8125"
+            - name: STATSD_PREFIX
+              value: locust
+            - name: TARGET_HOST
+              value: https://targethost
+          ports:
+            - name: loc-master-web
+              containerPort: 8089
+              protocol: TCP
+            - name: loc-master-p1
+              containerPort: 5557
+              protocol: TCP
+            - name: loc-master-p2
+              containerPort: 5558
+              protocol: TCP
